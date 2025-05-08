@@ -95,7 +95,7 @@ const Footer = () => {
         
         <div className="py-6 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-chatnest-light/50 mb-4 md:mb-0">
-            <span>Um projeto desenvolvido com ❤️ no Brasil</span>
+            <span>Um projeto desenvolvido com 💻 no Brasil</span>
           </div>
           
           <div className="flex space-x-4 text-sm text-chatnest-light/50">
