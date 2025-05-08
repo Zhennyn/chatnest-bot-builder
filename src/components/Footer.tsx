@@ -37,12 +37,6 @@ const Footer = () => {
             <p className="text-chatnest-light/70 mb-4">
               Crie, gerencie e analise seus bots do Typebot em uma única plataforma.
             </p>
-            <div className="flex space-x-3 mb-6">
-              <SocialIcon icon={<Facebook size={18} />} href="https://facebook.com" />
-              <SocialIcon icon={<Instagram size={18} />} href="https://instagram.com" />
-              <SocialIcon icon={<Twitter size={18} />} href="https://twitter.com" />
-              <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com" />
-            </div>
             <p className="text-chatnest-light/50 text-sm">
               © {new Date().getFullYear()} ChatNest. Todos os direitos reservados.
             </p>
