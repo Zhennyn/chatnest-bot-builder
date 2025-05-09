@@ -40,6 +40,13 @@ const Footer = () => {
             <p className="text-chatnest-light/50 text-sm">
               © {new Date().getFullYear()} ChatNest. Todos os direitos reservados.
             </p>
+            
+            <div className="flex space-x-3 mt-4">
+              <SocialIcon icon={<Facebook size={16} />} href="https://facebook.com" />
+              <SocialIcon icon={<Instagram size={16} />} href="https://instagram.com" />
+              <SocialIcon icon={<Twitter size={16} />} href="https://twitter.com" />
+              <SocialIcon icon={<Linkedin size={16} />} href="https://linkedin.com" />
+            </div>
           </div>
           
           <div>
@@ -49,15 +56,16 @@ const Footer = () => {
               <li><Link to="/pricing" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Preços</Link></li>
               <li><Link to="/faq" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">FAQ</Link></li>
               <li><Link to="/roadmap" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Roadmap</Link></li>
+              <li><Link to="/docs" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Documentação</Link></li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-chatnest-light font-semibold mb-4">Suporte</h4>
             <ul className="space-y-2">
+              <li><Link to="/support" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Central de Ajuda</Link></li>
+              <li><Link to="/contact" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Fale Conosco</Link></li>
               <li><Link to="/docs" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Documentação</Link></li>
-              <li><Link to="/contact" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Contato</Link></li>
-              <li><Link to="/status" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Status</Link></li>
               <li><a href="mailto:suporte@chatnest.com.br" className="text-chatnest-light/70 hover:text-chatnest-light transition-colors">Email de Suporte</a></li>
             </ul>
           </div>
@@ -65,7 +73,7 @@ const Footer = () => {
           <div>
             <h4 className="text-chatnest-light font-semibold mb-4">Newsletter</h4>
             <p className="text-chatnest-light/70 mb-3">Fique por dentro das novidades e atualizações do ChatNest</p>
-            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+            <form onSubmit={handleNewsletterSubmit} className="space-y-3" id="newsletter">
               <div className="flex">
                 <input
                   type="email"
