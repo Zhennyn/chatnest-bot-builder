@@ -35,7 +35,3 @@ verify_jwt = false
 
 [functions.track-message]
 verify_jwt = false
-
-[functions.create-admin]
-verify_jwt = false
-

@@ -93,11 +93,6 @@ const DashboardPage = () => {
       return;
     }
     
-    if (!user) {
-      toast.error("Usuário não autenticado");
-      return;
-    }
-    
     setSubmitting(true);
     
     try {
@@ -106,8 +101,7 @@ const DashboardPage = () => {
         .insert({
           name: botName,
           typebot_url: typebotUrl,
-          description: botDescription || null,
-          user_id: user.id
+          description: botDescription || null
         })
         .select();
 
