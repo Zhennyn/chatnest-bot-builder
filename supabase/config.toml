@@ -1,1 +1,37 @@
+
 project_id = "lvplsldnjervklcrrxrq"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+
+[db]
+port = 54322
+
+[studio]
+port = 54323
+
+[inbucket]
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://localhost:3000", "http://localhost:3000"]
+auto_confirm = true
+
+[functions]
+[functions.track-interaction]
+verify_jwt = false
+
+[functions.update-interaction]
+verify_jwt = false
+
+[functions.track-message]
+verify_jwt = false

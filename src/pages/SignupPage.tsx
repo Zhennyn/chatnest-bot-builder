@@ -1,37 +1,57 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { UserCheck, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const SignupPage = () => {
-  const { toast } = useToast();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // This is a placeholder function for now
-  // We'll implement the actual Supabase signup later
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!name || !email || !password) {
+      toast.error('Por favor preencha todos os campos');
+      return;
+    }
+    
     setLoading(true);
     
-    setTimeout(() => {
-      toast({
-        title: "Aguarde a integração com Supabase",
-        description: "Funcionalidade de cadastro será implementada quando o Supabase estiver conectado.",
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          },
+        },
       });
+      
+      if (error) throw error;
+      
+      toast.success('Conta criada com sucesso! Verifique seu email para confirmar o cadastro.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao criar conta');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (

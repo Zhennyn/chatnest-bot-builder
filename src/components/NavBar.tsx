@@ -1,14 +1,29 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 export const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success('Logout realizado com sucesso!');
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      toast.error('Erro ao fazer logout');
+    }
   };
 
   return (
@@ -44,16 +59,42 @@ export const NavBar = () => {
           <Link to="/faq" className="text-chatnest-light/90 hover:text-chatnest-light transition-colors">
             FAQ
           </Link>
-          <Link to="/login">
-            <Button variant="ghost" className="text-chatnest-light border border-chatnest-secondary/50 hover:bg-chatnest-secondary/20">
-              Entrar
-            </Button>
-          </Link>
-          <Link to="/signup">
-            <Button className="bg-gradient-to-r from-chatnest-accent to-chatnest-secondary hover:opacity-90 text-chatnest-light">
-              Começar agora
-            </Button>
-          </Link>
+          
+          {user ? (
+            <>
+              <Link to="/dashboard">
+                <Button variant="ghost" className="text-chatnest-light hover:bg-chatnest-secondary/20">
+                  Dashboard
+                </Button>
+              </Link>
+              <div className="flex items-center gap-2">
+                <div className="text-chatnest-light/90 mr-2 hidden lg:block">
+                  {profile?.name || user.email}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-chatnest-light hover:bg-chatnest-secondary/20"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={18} />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" className="text-chatnest-light border border-chatnest-secondary/50 hover:bg-chatnest-secondary/20">
+                  Entrar
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="bg-gradient-to-r from-chatnest-accent to-chatnest-secondary hover:opacity-90 text-chatnest-light">
+                  Começar agora
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -70,16 +111,42 @@ export const NavBar = () => {
             <Link to="/faq" className="text-chatnest-light/90 hover:text-chatnest-light py-2 transition-colors" onClick={toggleMenu}>
               FAQ
             </Link>
-            <Link to="/login" className="block w-full" onClick={toggleMenu}>
-              <Button variant="outline" className="w-full justify-center text-chatnest-light border-chatnest-secondary/50">
-                Entrar
-              </Button>
-            </Link>
-            <Link to="/signup" className="block w-full" onClick={toggleMenu}>
-              <Button className="w-full justify-center bg-gradient-to-r from-chatnest-accent to-chatnest-secondary hover:opacity-90 text-chatnest-light">
-                Começar agora
-              </Button>
-            </Link>
+            
+            {user ? (
+              <>
+                <Link to="/dashboard" className="block w-full" onClick={toggleMenu}>
+                  <Button variant="outline" className="w-full justify-center text-chatnest-light border-chatnest-secondary/50">
+                    Dashboard
+                  </Button>
+                </Link>
+                <div className="text-chatnest-light/90 py-2">
+                  {profile?.name || user.email}
+                </div>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-center text-chatnest-light hover:bg-chatnest-secondary/20 flex items-center gap-2"
+                  onClick={() => {
+                    handleLogout();
+                    toggleMenu();
+                  }}
+                >
+                  <LogOut size={18} /> Sair
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="block w-full" onClick={toggleMenu}>
+                  <Button variant="outline" className="w-full justify-center text-chatnest-light border-chatnest-secondary/50">
+                    Entrar
+                  </Button>
+                </Link>
+                <Link to="/signup" className="block w-full" onClick={toggleMenu}>
+                  <Button className="w-full justify-center bg-gradient-to-r from-chatnest-accent to-chatnest-secondary hover:opacity-90 text-chatnest-light">
+                    Começar agora
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

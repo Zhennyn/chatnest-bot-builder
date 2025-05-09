@@ -5,32 +5,42 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { KeyRound, ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const RecoverPage = () => {
-  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // This is a placeholder function for now
-  // We'll implement the actual Supabase password recovery later
   const handleRecover = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!email) {
+      toast.error('Por favor informe seu email');
+      return;
+    }
+    
     setLoading(true);
     
-    setTimeout(() => {
-      toast({
-        title: "Aguarde a integração com Supabase",
-        description: "Funcionalidade de recuperação de senha será implementada quando o Supabase estiver conectado.",
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
-      setLoading(false);
+      
+      if (error) throw error;
+      
       setSubmitted(true);
-    }, 1500);
+      toast.success('Email de recuperação enviado com sucesso!');
+      
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao enviar email de recuperação');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
