@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 type Profile = {
   id: string;
@@ -26,75 +27,84 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get session from local storage on initial load
-    const fetchSession = async () => {
-      try {
-        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
-
-        if (sessionError) {
-          console.error('Error fetching session:', sessionError);
-          return;
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, newSession) => {
+        // Only do synchronous state updates here
+        setSession(newSession);
+        setUser(newSession?.user || null);
+        
+        // Defer Supabase calls with setTimeout to prevent deadlocks
+        if (newSession?.user) {
+          setTimeout(() => {
+            fetchUserProfile(newSession.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
         }
+        
+        // Show toast notifications for auth events
+        if (event === 'SIGNED_IN') {
+          toast.success('Login realizado com sucesso!');
+        } else if (event === 'SIGNED_OUT') {
+          toast.success('Logout realizado com sucesso!');
+        }
+      }
+    );
 
+    // THEN check for existing session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        
         setSession(currentSession);
         setUser(currentSession?.user || null);
-
-        if (currentSession?.user?.id) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, name, avatar_url')
-            .eq('id', currentSession.user.id)
-            .single();
-
-          if (profileError && profileError.code !== 'PGRST116') {
-            console.error('Error fetching profile:', profileError);
-          } else if (profileData) {
-            setProfile(profileData);
-          }
+        
+        if (currentSession?.user) {
+          await fetchUserProfile(currentSession.user.id);
         }
       } catch (error) {
-        console.error('Auth error:', error);
+        console.error('Erro ao inicializar autenticação:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSession();
-
-    // Setup auth listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user || null);
-
-        if (newSession?.user?.id) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, name, avatar_url')
-            .eq('id', newSession.user.id)
-            .single();
-
-          if (profileError && profileError.code !== 'PGRST116') {
-            console.error('Error fetching profile:', profileError);
-          } else if (profileData) {
-            setProfile(profileData);
-          }
-        } else {
-          setProfile(null);
-        }
-      }
-    );
+    initializeAuth();
 
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, avatar_url')
+        .eq('id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erro ao buscar perfil:', error);
+        return;
+      } 
+      
+      if (data) {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar perfil do usuário:', error);
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      // Toast notification is handled by onAuthStateChange
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Erro ao fazer logout:', error);
+      toast.error('Erro ao fazer logout');
     }
   };
 

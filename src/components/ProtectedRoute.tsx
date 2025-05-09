@@ -15,6 +15,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return (
       <div className="flex items-center justify-center h-screen bg-chatnest-dark">
         <Spinner className="w-8 h-8 text-chatnest-accent" />
+        <span className="ml-2 text-chatnest-light">Carregando...</span>
       </div>
     );
   }

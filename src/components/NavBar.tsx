@@ -1,29 +1,30 @@
 
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
 
 export const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Detect authentication and redirect logged in users away from login/signup
+  useEffect(() => {
+    if (user && (location.pathname === '/login' || location.pathname === '/signup')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, location.pathname, navigate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleLogout = async () => {
-    try {
-      await signOut();
-      toast.success('Logout realizado com sucesso!');
-      navigate('/');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      toast.error('Erro ao fazer logout');
-    }
+    await signOut();
+    navigate('/');
   };
 
   return (
